@@ -1,4 +1,4 @@
-namespace Turbine_Form_Importer
+namespace Turbine_Forum_Importer
 {
     internal static class Program
     {

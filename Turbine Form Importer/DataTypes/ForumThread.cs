@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace Turbine_Forum_Importer.DataTypes
 {
-    internal class Forum
+    public class ForumThread
     {
-        public int Id = 0;
-        public string Url;
+        public int Id;
         public string Title;
-        public string Description;
-        public int Parent;
-        public int SortOrder;
+
+        // Original, base URL of this Thread
+        public string URL;
+
+        // ID of the forum this thread is in
+        public int Forum; 
     }
 }

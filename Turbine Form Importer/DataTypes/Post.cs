@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Turbine_Form_Importer.DataTypes
+namespace Turbine_Forum_Importer.DataTypes
 {
     internal class Post
     {

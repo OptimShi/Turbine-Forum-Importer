@@ -1,6 +1,7 @@
-using Turbine_Form_Importer.Import;
+using Turbine_Forum_Importer.DataTypes;
+using Turbine_Forum_Importer.Import;
 
-namespace Turbine_Form_Importer
+namespace Turbine_Forum_Importer
 {
     public partial class Form1 : Form
     {
@@ -22,6 +23,11 @@ namespace Turbine_Form_Importer
 
             progress.Visible = true;
             statusFileCount.Visible = true;
+
+            Dictionary<uint, Post> Posts = new Dictionary<uint, Post>();
+            Dictionary<uint, ForumThread> Threads = new Dictionary<uint, ForumThread>();
+            Dictionary<uint, User> Users = new Dictionary<uint, User>();
+            Dictionary<uint, Forum> Fourms = new Dictionary<uint, Forum>();
 
             foreach (string file in files)
             {
