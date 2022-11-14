@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Turbine_Forum_Importer.DataTypes
 {
-    internal class Forum
+    public class Forum
     {
         public int Id = 0;
         public string Url;
@@ -14,5 +14,12 @@ namespace Turbine_Forum_Importer.DataTypes
         public string Description;
         public int Parent;
         public int SortOrder;
+
+        public string GetSQLStatement() {
+
+
+
+            return "";
+        }
     }
 }

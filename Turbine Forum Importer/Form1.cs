@@ -29,6 +29,8 @@ namespace Turbine_Forum_Importer
             Dictionary<uint, User> Users = new Dictionary<uint, User>();
             Dictionary<uint, Forum> Fourms = new Dictionary<uint, Forum>();
 
+            Db db = new Db();
+
             foreach (string file in files)
             {
                 progress.PerformStep();
@@ -36,6 +38,8 @@ namespace Turbine_Forum_Importer
                 var import = new FileImporter(file);
                 string basename = Path.GetFileName(file);
                 textStatus.AppendText(basename + " -- " + import.Template + Environment.NewLine);
+
+
             }
 
             progress.Visible = false;
