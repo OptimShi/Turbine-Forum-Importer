@@ -16,5 +16,20 @@ namespace Turbine_Forum_Importer.DataTypes
 
         // ID of the forum this thread is in
         public int Forum; 
+
+        public string GetSQLStatement()
+        {
+            //$sql = "REPLACE INTO `threads` (`id`, `title`, `forum`, `url`) VALUES
+            //              ({$thread['id']}, '{$threadTitle}', {$thread['forum']}, '{$thread['url']}')";
+            string sql = "";
+            return sql;
+        }
+
+        public void UpdateThread(ForumThread t)
+        {
+            // Make sure all the values in p are in this POST
+            // Some may be null for whatever reason
+        }
+
     }
 }

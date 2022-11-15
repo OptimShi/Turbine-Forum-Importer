@@ -16,7 +16,19 @@ namespace Turbine_Forum_Importer.DataTypes
         public bool Guest = false;
 
         public string HTML;
-        public string Url;
         public DateTime PostDate;
+
+        public string GetSQLStatement()
+        {
+            string sql = "";
+            return sql;
+        }
+
+        public void UpdatePost(Post p)
+        {
+            // Make sure all the values in p are in this POST
+            // Some may be null for whatever reason
+        }
+
     }
 }

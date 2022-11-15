@@ -18,15 +18,23 @@ namespace Turbine_Forum_Importer.Import
         public string Template;
         private string Filename;
 
-        Dictionary<int, Post> Posts = new Dictionary<int, Post>();
-        Dictionary<int, ForumThread> Threads = new Dictionary<int, ForumThread>();
-        Dictionary<int, User> Users = new Dictionary<int, User>();
-        Dictionary<int, Forum> Forums = new Dictionary<int, Forum>();
+        public Dictionary<int, Post> Posts = new Dictionary<int, Post>();
+        public Dictionary<int, ForumThread> Threads = new Dictionary<int, ForumThread>();
+        public Dictionary<int, User> Users = new Dictionary<int, User>();
+        public Dictionary<int, Forum> Forums = new Dictionary<int, Forum>();
+        
         HtmlParser parser = new HtmlParser();
         IHtmlDocument document;
 
         public FileImporter(string filename){
             Filename = filename;
+
+            // Some files are too large, because they're not the files we want (images, odd zips, etc)
+            FileInfo fileInfo = new FileInfo(filename);
+            long maxSizeToRead = 1024 * 1024 * 5; // 5MB
+            if (fileInfo.Length > maxSizeToRead)
+                return;
+
             RawText = File.ReadAllText(Filename);
             Template = getTemplate();
 
@@ -150,7 +158,7 @@ namespace Turbine_Forum_Importer.Import
 
             if (Users.ContainsKey(u.Id))
             {
-
+                Users[u.Id].UpdateUser(u);
             }
             else
             {
@@ -164,7 +172,7 @@ namespace Turbine_Forum_Importer.Import
 
             if (Posts.ContainsKey(p.Id))
             {
-
+                Posts[p.Id].UpdatePost(p);
             }
             else
             {

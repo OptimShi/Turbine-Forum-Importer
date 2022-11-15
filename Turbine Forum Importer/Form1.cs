@@ -14,7 +14,8 @@ namespace Turbine_Forum_Importer
         {
             textStatus.Text = "";
             string path = @"D:\Web Development\Turbine\archives\zip\www.asheronscall.com\";
-            path = @"D:\Web Development\Turbine\new_forums\unique_samples\";
+            //path = @"D:\Web Development\Turbine\archives\rar\";
+            //path = @"D:\Web Development\Turbine\unique_samples\";
             string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
             statusFileCount.Text = files.Length + " Files Found.";
             progress.Maximum = files.Length;
@@ -24,10 +25,10 @@ namespace Turbine_Forum_Importer
             progress.Visible = true;
             statusFileCount.Visible = true;
 
-            Dictionary<uint, Post> Posts = new Dictionary<uint, Post>();
-            Dictionary<uint, ForumThread> Threads = new Dictionary<uint, ForumThread>();
-            Dictionary<uint, User> Users = new Dictionary<uint, User>();
-            Dictionary<uint, Forum> Fourms = new Dictionary<uint, Forum>();
+            Dictionary<int, Post> Posts = new Dictionary<int, Post>();
+            Dictionary<int, ForumThread> Threads = new Dictionary<int, ForumThread>();
+            Dictionary<int, User> Users = new Dictionary<int, User>();
+            Dictionary<int, Forum> Forums = new Dictionary<int, Forum>();
 
             Db db = new Db();
 
@@ -38,6 +39,38 @@ namespace Turbine_Forum_Importer
                 var import = new FileImporter(file);
                 string basename = Path.GetFileName(file);
                 textStatus.AppendText(basename + " -- " + import.Template + Environment.NewLine);
+
+                foreach (var p in import.Posts)
+                {
+                    if (Posts.ContainsKey(p.Key))
+                        Posts[p.Key].UpdatePost(p.Value);
+                    else
+                        Posts.Add(p.Key, p.Value);
+                }
+
+                foreach (var t in import.Threads)
+                {
+                    if (Threads.ContainsKey(t.Key))
+                        Threads[t.Key].UpdateThread(t.Value);
+                    else
+                        Threads.Add(t.Key, t.Value);
+                }
+
+                foreach (var u in import.Users)
+                {
+                    if (Users.ContainsKey(u.Key))
+                        Users[u.Key].UpdateUser(u.Value);
+                    else
+                        Users.Add(u.Key, u.Value);
+                }
+
+                foreach (var f in import.Forums)
+                {
+                    if (Forums.ContainsKey(f.Key))
+                        Forums[f.Key].UpdateForum(f.Value);
+                    else
+                        Forums.Add(f.Key, f.Value);
+                }
 
 
             }

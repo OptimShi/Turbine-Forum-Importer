@@ -16,10 +16,15 @@ namespace Turbine_Forum_Importer.DataTypes
         public int SortOrder;
 
         public string GetSQLStatement() {
-
-
-
-            return "";
+            string sql = "";
+            return sql;
         }
+
+        public void UpdateForum(Forum f)
+        {
+            // Make sure all the values in p are in this POST
+            // Some may be null for whatever reason
+        }
+
     }
 }

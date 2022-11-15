@@ -4,6 +4,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using AngleSharp.Text;
 using Google.Protobuf.Collections;
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
@@ -17,6 +18,7 @@ using System.Windows.Forms;
 using System.Xml;
 using Turbine_Forum_Importer.DataTypes;
 using static Google.Protobuf.WellKnownTypes.Field.Types;
+using User = Turbine_Forum_Importer.DataTypes.User;
 
 namespace Turbine_Forum_Importer.Import
 {
@@ -111,6 +113,82 @@ namespace Turbine_Forum_Importer.Import
             return f.Id;
         }
 
+        User ShowThread_GetUser(IElement u)
+        {
+            User user = new User();
+            var username = u.QuerySelector("a.username");
+            if (username != null)
+            {
+                user.Name = username.TextContent;
+                var link = GetQueryStringFromURL(username.Attributes["href"].Value);
+                user.Url = link;
+
+                user.Id = GetIdFromUrl(link);
+
+            }
+
+            var avatar = u.QuerySelector(".postuseravatar img");
+            if(avatar != null)
+            {
+                user.Avatar = avatar.Attributes["src"].Value;
+            }
+
+            var userExtra = u.QuerySelector(".userinfo_extra");
+            bool PostCountFound = false;
+            if (userExtra != null && userExtra.Children.Length > 0)
+            {
+                for(var i = 0; i< userExtra.Children.Length; i++)
+                {
+                    switch (userExtra.Children[i].TextContent)
+                    {
+                        case "Posts":
+                            i++;
+                            user.PostCount = Int32.Parse(userExtra.Children[i].TextContent.Replace(",", ""));
+                            break;
+                        case "Join Date":
+                            i++;
+                            user.JoinDate = userExtra.Children[i].TextContent.Replace(",", "");
+                            break;
+                        case "Location":
+                            i++;
+                            user.Location = userExtra.Children[i].TextContent.Replace(",", "");
+                            break;
+                        default:
+                            var test = userExtra.Children[i].TextContent;
+                            break;
+                    }
+                }
+
+                foreach (var extraChild in userExtra.Children)
+                {
+                    if (PostCountFound)
+                    {
+                        user.PostCount = Int32.Parse(extraChild.TextContent.Replace(",", ""));
+                        break;
+                    }
+                    else if (extraChild.TextContent == "Posts")
+                    {
+                        // The dd is "Posts", the dt is the actual post count.
+                        // Setting this flag tells us the next item is the count.
+                        PostCountFound = true;
+                    }
+                }
+            }
+
+
+            // You could post as a guest??
+            var guests = document.QuerySelectorAll("span.username.guest");
+            foreach (var guest in guests)
+            {
+                user.Guest = true;
+                user.Id = 0;
+                user.Name = guest.TextContent;
+            }
+
+            AddUser(user);
+            return user;
+        }
+
         Dictionary<string, User> ShowThread_GetUsers()
         {
             Dictionary<string, User> users = new Dictionary<string, User>();
@@ -119,50 +197,8 @@ namespace Turbine_Forum_Importer.Import
     
             foreach(var u in userInfo)
             {
-                User user = new User();
-                var username = u.QuerySelector("a.username");
-                if(username != null)
-                {
-                    user.Name = username.TextContent;
-                    var link = GetQueryStringFromURL(username.Attributes["href"].Value);
-                    user.Url = link;
-
-                    user.Id = GetIdFromUrl(link);
-                    
-                }
-
-                var userExtra = u.QuerySelector(".userinfo_extra");
-                bool PostCountFound = false;
-                if(userExtra != null && userExtra.Children.Length > 0)
-                {
-                    foreach(var extraChild in userExtra.Children)
-                    {
-                        if (PostCountFound)
-                        {
-                            user.PostCount = Int32.Parse(extraChild.TextContent.Replace(",", ""));
-                            break;
-                        }
-                        else if(extraChild.TextContent == "Posts")
-                        {
-                            // The dd is "Posts", the dt is the actual post count.
-                            // Setting this flag tells us the next item is the count.
-                            PostCountFound = true;
-                        }
-                    }
-                }
-
-                // You could post as a guest??
-                var guests = document.QuerySelectorAll("span.username.guest");
-                foreach (var guest in guests)
-                {
-                    user.Guest = true;
-                    user.Id = 0;
-                    user.Name = guest.TextContent;
-                }
-
-    
-                AddUser(user);
-                if((user.Id > 0 || user.Guest) && users.ContainsKey(user.Name) == false)
+                var user = ShowThread_GetUser(u);
+                if ((user.Id > 0 || user.Guest) && users.ContainsKey(user.Name) == false)
                 {
                     users.Add(user.Name, user);
                 }
@@ -179,7 +215,9 @@ namespace Turbine_Forum_Importer.Import
             foreach(var postItem in postItems)
             {
                 var post = new Post();
-                post.HTML = postItem.InnerHtml;
+                var content = postItem.QuerySelector(".postcontent");
+                if (content != null)
+                    post.HTML = content.InnerHtml.Trim() ;
 
                 var postDate = getDateFromPostdate(postItem);
                 if (postDate != null)
@@ -189,6 +227,11 @@ namespace Turbine_Forum_Importer.Import
                 if (id.Length > 0)
                     post.Id = Int32.Parse(id);
 
+                var userInfo = postItem.QuerySelector(".userinfo");
+                var user = ShowThread_GetUser(userInfo);
+                post.User = user.Id;
+                post.Username = user.Name;
+                post.Guest = user.Guest;
 
                 AddPost(post);
                 if(post.Id > 0)
@@ -203,14 +246,14 @@ namespace Turbine_Forum_Importer.Import
             var dateItem = postItem.QuerySelector("span.date");
             if(dateItem != null)
             {
-                string[] formats = { "yyyyMMdd", "HH:mm a" };
-                // define('TURBINE_DATE_FORMAT', 'm-d-Y g:i a');
-
-                //string[] formats = { "mm-dd-yyyy", "hh:mmss" };
-                if (DateTime.TryParseExact(dateItem.TextContent, "M-d-yyyy, hh:mm t ", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                {
+                CultureInfo enUS = new CultureInfo("en-US");
+                //              "11-04-2004 04:43 PM"
+                string format = "MM'-'dd'-'yyyy hh:mm tt";
+                string testDate = DateTime.Now.ToString(format);
+                string dateString = dateItem.TextContent.Replace(",", "").Trim();
+                //dateString = dateString.Replace("-", "/");
+                if (DateTime.TryParse(dateString,  out DateTime dt))
                     return dt;
-                }
                     
             }
             return null;
