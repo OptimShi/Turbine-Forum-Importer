@@ -58,7 +58,7 @@ namespace Turbine_Forum_Importer.Import
 
                 t.Id = GetIdFromUrl(Canonical); ;
                 threadId = t.Id;
-                t.URL = Canonical;
+                t.Url = Canonical;
             }
 
             return t;
@@ -215,6 +215,7 @@ namespace Turbine_Forum_Importer.Import
             foreach(var postItem in postItems)
             {
                 var post = new Post();
+                post.Thread = threadId;
                 var content = postItem.QuerySelector(".postcontent");
                 if (content != null)
                     post.HTML = content.InnerHtml.Trim() ;
@@ -222,6 +223,8 @@ namespace Turbine_Forum_Importer.Import
                 var postDate = getDateFromPostdate(postItem);
                 if (postDate != null)
                     post.PostDate = (DateTime)postDate;
+                else
+                    continue;
 
                 var id = postItem.Id.Replace("post_", "");
                 if (id.Length > 0)

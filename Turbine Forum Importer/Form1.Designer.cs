@@ -30,10 +30,10 @@
         {
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.progress = new System.Windows.Forms.ToolStripProgressBar();
+            this.statusFileCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textStatus = new System.Windows.Forms.TextBox();
             this.btnDoImport = new System.Windows.Forms.Button();
-            this.statusFileCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -44,16 +44,26 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.progress,
             this.statusFileCount});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 561);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 673);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1159, 32);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 17, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(1391, 39);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // progress
             // 
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(500, 24);
+            this.progress.Size = new System.Drawing.Size(600, 29);
+            this.progress.Visible = false;
+            // 
+            // statusFileCount
+            // 
+            this.statusFileCount.Name = "statusFileCount";
+            this.statusFileCount.Size = new System.Drawing.Size(206, 30);
+            this.statusFileCount.Text = "toolStripStatusLabel1";
+            this.statusFileCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.statusFileCount.Visible = false;
             // 
             // panel1
             // 
@@ -63,46 +73,43 @@
             this.panel1.Controls.Add(this.btnDoImport);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1159, 561);
+            this.panel1.Size = new System.Drawing.Size(1391, 673);
             this.panel1.TabIndex = 4;
             // 
             // textStatus
             // 
             this.textStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textStatus.Location = new System.Drawing.Point(0, 114);
+            this.textStatus.Location = new System.Drawing.Point(0, 137);
+            this.textStatus.Margin = new System.Windows.Forms.Padding(4);
             this.textStatus.Multiline = true;
             this.textStatus.Name = "textStatus";
             this.textStatus.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textStatus.Size = new System.Drawing.Size(1159, 444);
+            this.textStatus.Size = new System.Drawing.Size(1390, 532);
             this.textStatus.TabIndex = 3;
             // 
             // btnDoImport
             // 
-            this.btnDoImport.Location = new System.Drawing.Point(22, 36);
+            this.btnDoImport.Location = new System.Drawing.Point(26, 43);
+            this.btnDoImport.Margin = new System.Windows.Forms.Padding(4);
             this.btnDoImport.Name = "btnDoImport";
-            this.btnDoImport.Size = new System.Drawing.Size(112, 34);
+            this.btnDoImport.Size = new System.Drawing.Size(134, 41);
             this.btnDoImport.TabIndex = 2;
             this.btnDoImport.Text = "Import";
             this.btnDoImport.UseVisualStyleBackColor = true;
             this.btnDoImport.Click += new System.EventHandler(this.btnDoImport_Click);
             // 
-            // statusFileCount
-            // 
-            this.statusFileCount.Name = "statusFileCount";
-            this.statusFileCount.Size = new System.Drawing.Size(179, 25);
-            this.statusFileCount.Text = "toolStripStatusLabel1";
-            this.statusFileCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1159, 593);
+            this.ClientSize = new System.Drawing.Size(1391, 712);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip1);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.statusStrip1.ResumeLayout(false);
