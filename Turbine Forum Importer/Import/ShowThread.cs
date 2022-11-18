@@ -44,19 +44,15 @@ namespace Turbine_Forum_Importer.Import
 
         ForumThread ShowThread_GetThreadInfo(ForumThread t)
         {
+            var canon = document.QuerySelector("link[rel=canonical]");
             // <link rel="canonical" href="showthread.php?57-Prismatic-Peas" />
-            string match = "<link rel=\"canonical\" href=\"";
-            var start = RawText.IndexOf(match);
 
             // Get the URL and ThreadID from the Canonical
-            if (start != -1)
+            if (canon != null)
             {
-                start = start + match.Length;
-                var end = RawText.IndexOf('"', start); // get the closing of this tag
+                string Canonical = GetQueryStringFromURL(canon.Attributes["href"].Value);
 
-                string Canonical = GetQueryStringFromURL(RawText.Substring(start, end - start));
-
-                t.Id = GetIdFromUrl(Canonical); ;
+                t.Id = GetIdFromUrl(Canonical);
                 threadId = t.Id;
                 t.Url = Canonical;
             }
@@ -252,8 +248,10 @@ namespace Turbine_Forum_Importer.Import
                 CultureInfo enUS = new CultureInfo("en-US");
                 //              "11-04-2004 04:43 PM"
                 string format = "MM'-'dd'-'yyyy hh:mm tt";
-                string testDate = DateTime.Now.ToString(format);
+                //string testDate = DateTime.Now.ToString(format);
                 string dateString = dateItem.TextContent.Replace(",", "").Trim();
+                dateString = dateString.Replace("Today", "01-28-2017");
+                dateString = dateString.Replace("Yesterday", "01-27-2017");
                 //dateString = dateString.Replace("-", "/");
                 if (DateTime.TryParse(dateString,  out DateTime dt))
                     return dt;

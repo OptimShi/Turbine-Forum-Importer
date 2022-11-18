@@ -1,0 +1,22 @@
+
+<table id="memberlist_table" width="100%">
+<tr class="columnsort">
+    <th><a class="blocksubhead" href="memberlist.php-ltr=-&amp;order=asc&amp;sort=username&amp;pp=30.html">User Name </a></th>
+    <th><a class="blocksubhead" href="memberlist.php-ltr=-&amp;order=asc&amp;sort=posts&amp;pp=30.html">Posts <!-- BEGIN TEMPLATE: forumdisplay_sortarrow --> 
+        <img class="sortarrow" src="images/buttons/sortarrow-asc.png" alt="Reverse Sort Order" border="0" /> 
+        <!-- END TEMPLATE: forumdisplay_sortarrow --></a></th>
+    <th><a class="blocksubhead" href="memberlist.php-ltr=-&amp;order=asc&amp;sort=lastvisit&amp;pp=30.html">Last Visit </a></th>
+    <th><span class="blocksubhead">Avatar</span></th>
+</tr>
+<tr>
+    <td class="alt1 username"><a href="member.php-23816-Reign.html" class="username">-Reign-</a> <span class="usertitle">Registered User</span></td>
+    <td class="postcount">1,854</td>
+    <td class="lastvisit"><span class="date">03-19-2015</span> <span class="time">07:31 AM</span></td>
+    <td class="avatar">&nbsp;</td>
+</tr>
+<tr>
+    <td class="alt1 username"><a href="member.php-5666-_b0o-(ARCHIVED).html" class="username">_b0o (ARCHIVED)</a> <span class="usertitle">Registered User</span></td>
+    <td class="postcount">934</td>
+    <td class="lastvisit"><span class="date">03-10-2008</span> <span class="time">06:36 PM</span></td>
+    <td class="avatar">&nbsp;</td>
+</tr>

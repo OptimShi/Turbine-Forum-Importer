@@ -26,7 +26,8 @@ namespace Turbine_Forum_Importer.Import
         HtmlParser parser = new HtmlParser();
         IHtmlDocument document;
 
-        public FileImporter(string filename){
+        public FileImporter(string filename, bool onlyReadTemplate = false)
+        {
             Filename = filename;
 
             // Some files are too large, because they're not the files we want (images, odd zips, etc)
@@ -37,21 +38,24 @@ namespace Turbine_Forum_Importer.Import
 
             RawText = File.ReadAllText(Filename);
             Template = getTemplate();
-
-            if (Template != "")
-            {
-                switch (Template)
+            if (!onlyReadTemplate) 
+            { 
+                if (Template != "")
                 {
-                    case "SHOWTHREAD":
-                        ParseShowThread();
-                        break;
-                    default:
-                        // Do nothing for now.
-                        break;
+                    switch (Template)
+                    {
+                        case "SHOWTHREAD":
+                            ParseShowThread();
+                            break;
+                        default:
+                            // Do nothing for now.
+                            break;
 
+                    }
                 }
             }
         }
+
 
         private void LoadDOM()
         {
@@ -123,6 +127,19 @@ namespace Turbine_Forum_Importer.Import
             if (QueryString.IndexOf("/") != -1)
                 QueryString = QueryString.Substring(0, QueryString.LastIndexOf("/"));
 
+            // Remove a trailing ".html"
+            if (QueryString.IndexOf(".html") != -1 && QueryString.IndexOf(".html") == (QueryString.Length - 5))
+                QueryString = QueryString.Substring(0, QueryString.LastIndexOf(".html"));
+
+            // Remove a trailing "-pageX"
+            if (QueryString.IndexOf("-page") != -1 && QueryString.IndexOf("-page") == (QueryString.Length - 6))
+                QueryString = QueryString.Substring(0, QueryString.LastIndexOf("-page"));
+            // -pageXX
+            if (QueryString.IndexOf("-page") != -1 && QueryString.IndexOf("-page") == (QueryString.Length - 7))
+                QueryString = QueryString.Substring(0, QueryString.LastIndexOf("-page"));
+
+
+
             return QueryString;
         }
 
@@ -133,7 +150,13 @@ namespace Turbine_Forum_Importer.Import
         /// <returns></returns>
         private int GetIdFromUrl(string url)
         {
-            int id = Int32.Parse(url.Substring(0, url.IndexOf("-")));
+            int id = 0;
+            // Checks if the URL is already just a number, e.g. "12345". This can happen if title is non-ASCII, and the hyphen is dropped
+            bool alreadyNumeric = int.TryParse(url, out id);
+            if (!alreadyNumeric)
+            {
+                int.TryParse(url.Substring(0, url.IndexOf("-")), out id);
+            }
             return id;
         }
 

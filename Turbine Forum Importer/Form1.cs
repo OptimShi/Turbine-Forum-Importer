@@ -30,10 +30,18 @@ namespace Turbine_Forum_Importer
             if (Posts.Count == 0) InitDbTables();
 
             textStatus.Text = "";
-            string path = @"D:\Web Development\Turbine\archives\zip\";
-            //path = @"D:\Web Development\Turbine\archives\rar\";
+            string path = @"D:\Web Development\turbine\archives\zip\SHOWTHREAD";
+            path = @"D:\Web Development\Turbine\archives\rar\SHOWTHREAD";
+            path = @"E:\Turbine\WayBack Ruby Crawl\";
             //path = @"D:\Web Development\Turbine\unique_samples\";
             string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+            /*
+            string[] files = new string[3];
+            files[0] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-34269-It-s-been-over-6-years-I-need-an-answer&goto=nextnewest.html");
+            files[1] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-34269-It-s-been-over-6-years-I-need-an-answer&p=754869&mode=linear.html");
+            files[2] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-57857&p=660770.html");
+            */
+
             statusFileCount.Text = files.Length + " Files Found.";
             progress.Maximum = files.Length;
             progress.Value = 0;
@@ -150,6 +158,57 @@ namespace Turbine_Forum_Importer
             progress.Visible = false;
             statusFileCount.Visible = false;
 
+        }
+
+        private void btnOrganize_Click(object sender, EventArgs e)
+        {
+            textStatus.Text = "";
+            string path = @"D:\Web Development\Turbine\archives\zip\";
+            path = @"D:\Web Development\Turbine\archives\rar\";
+            //path = @"D:\Web Development\Turbine\unique_samples\";
+            string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+            statusFileCount.Text = files.Length + " Files Found.";
+            progress.Maximum = files.Length;
+            progress.Value = 0;
+            progress.Step = 1;
+
+            progress.Visible = true;
+            statusFileCount.Visible = true;
+
+            foreach (string file in files)
+            {
+                var import = new FileImporter(file, true);
+                string template = import.Template;
+                string basename = Path.GetFileName(file);
+                textStatus.AppendText(basename + " -- " + import.Template + Environment.NewLine);
+
+                if(template == "" || template == null)
+                    template = "other";
+
+                string destinationPath = Path.Combine(path, template);
+                if (!Directory.Exists(destinationPath))
+                {
+                    Directory.CreateDirectory(destinationPath);
+                }
+                string destination = Path.Combine(destinationPath, basename);
+                if(destination == file) { continue; } // Skip files already organized!
+                int unique = 1;
+                if (File.Exists(destination))
+                {
+                    while (File.Exists(destination))
+                    {
+                        string baseFileName = Path.GetFileNameWithoutExtension(basename);
+                        string extension = Path.GetExtension(basename);
+                        destination = Path.Combine(destinationPath, baseFileName + "_" + unique.ToString() + extension);
+                        unique++;
+                    }
+                }
+                File.Move(file, destination);
+                progress.PerformStep();
+            }
+
+            progress.Visible = false;
+            statusFileCount.Visible = false;
         }
     }
 }

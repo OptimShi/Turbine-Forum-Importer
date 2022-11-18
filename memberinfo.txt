@@ -1,0 +1,47 @@
+MEMBERINFO
+var THISUSERID = 7;
+------------
+<!-- stats_mini -->
+<div id="view-stats_mini" class="subsection block">
+	<!-- BEGIN TEMPLATE: memberinfo_block_ministats -->
+<div class="mini_stats blockbody userprof_content userprof_content_border">
+	<div class="userinfo " >
+		<h5 class="blocksubhead userprof_blocksubhead smaller">Mini Statistics</h5>
+		<div class="blockrow member_blockrow">
+
+			<dl class="stats">
+				<dt>Join Date</dt>
+				<dd> 11-19-2003</dd>
+			</dl>
+	
+	
+	<dl class="stats">
+		<dt>Last Activity</dt>
+		<dd> 05-09-2010 <span class="time">10:13 AM</span></dd>
+	</dl>
+	
+
+			
+			
+			<dl class="stats">
+				<dt>Avatar</dt>
+				<dd class="avatar"><img src="image.php-u=7&amp;dateline=1076111283.jpeg" alt="Orion (ARCHIVED)'s Avatar"   width="60" id="user_avatar" /></dd>
+			</dl>
+			
+		</div>
+	</div><!-- blockbody -->
+</div><!-- widget block mini_stats -->
+
+------------	
+<div id="view-contactinfo" class="subsection block">
+	<!-- BEGIN TEMPLATE: memberinfo_block_contactinfo -->
+<!-- contact information -->
+<div class="blocksubhead subsectionhead userprof_headers userprof_headers_border" >
+	<h4 class="subsectionhead-understate" style="width:100%" id="contact-info">Contact</h4><br />
+</div>
+	<div class="blockbody subsection userprof_content userprof_content_border">
+		<dl class="blockrow stats">
+			<dt>This Page</dt>
+			<dd> <a href="member.php-7-Orion-(ARCHIVED).html">https://www.asheronscall.com/en/forums/member.php?7-Orion-(ARCHIVED)</a></dd>
+		</dl>
+		

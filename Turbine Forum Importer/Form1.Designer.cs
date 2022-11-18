@@ -34,6 +34,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.textStatus = new System.Windows.Forms.TextBox();
             this.btnDoImport = new System.Windows.Forms.Button();
+            this.btnOrganize = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -44,10 +45,10 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.progress,
             this.statusFileCount});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 673);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 690);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 17, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1391, 39);
+            this.statusStrip1.Size = new System.Drawing.Size(1385, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -69,25 +70,26 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.btnOrganize);
             this.panel1.Controls.Add(this.textStatus);
             this.panel1.Controls.Add(this.btnDoImport);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1391, 673);
+            this.panel1.Size = new System.Drawing.Size(1385, 690);
             this.panel1.TabIndex = 4;
             // 
             // textStatus
             // 
             this.textStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textStatus.Location = new System.Drawing.Point(0, 137);
+            this.textStatus.Location = new System.Drawing.Point(0, 154);
             this.textStatus.Margin = new System.Windows.Forms.Padding(4);
             this.textStatus.Multiline = true;
             this.textStatus.Name = "textStatus";
             this.textStatus.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textStatus.Size = new System.Drawing.Size(1390, 532);
+            this.textStatus.Size = new System.Drawing.Size(1384, 532);
             this.textStatus.TabIndex = 3;
             // 
             // btnDoImport
@@ -101,12 +103,24 @@
             this.btnDoImport.UseVisualStyleBackColor = true;
             this.btnDoImport.Click += new System.EventHandler(this.btnDoImport_Click);
             // 
+            // btnOrganize
+            // 
+            this.btnOrganize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOrganize.Location = new System.Drawing.Point(1228, 63);
+            this.btnOrganize.Name = "btnOrganize";
+            this.btnOrganize.Size = new System.Drawing.Size(131, 40);
+            this.btnOrganize.TabIndex = 4;
+            this.btnOrganize.Text = "Organize";
+            this.btnOrganize.UseVisualStyleBackColor = true;
+            this.btnOrganize.Click += new System.EventHandler(this.btnOrganize_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1391, 712);
+            this.ClientSize = new System.Drawing.Size(1385, 712);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip1);
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -129,5 +143,6 @@
         private TextBox textStatus;
         private Button btnDoImport;
         private ToolStripStatusLabel statusFileCount;
+        private Button btnOrganize;
     }
 }

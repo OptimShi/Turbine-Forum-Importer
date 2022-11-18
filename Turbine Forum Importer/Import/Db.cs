@@ -31,8 +31,13 @@ namespace Turbine_Forum_Importer.Import
         public bool RunSQL(string command)
         {
             var cmd = new MySqlCommand(command, Connection);
-
-            var result = cmd.ExecuteScalar();
+            try { 
+                var result = cmd.ExecuteScalar(); 
+            }catch(Exception ex)
+            {
+                // Something bad happened... Probably a crappy date!
+            }
+            
             return true;
         }
 
