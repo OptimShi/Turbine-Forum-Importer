@@ -153,7 +153,7 @@ namespace Turbine_Forum_Importer.Import
             int id = 0;
             // Checks if the URL is already just a number, e.g. "12345". This can happen if title is non-ASCII, and the hyphen is dropped
             bool alreadyNumeric = int.TryParse(url, out id);
-            if (!alreadyNumeric)
+            if (!alreadyNumeric && url.IndexOf("-") != -1)
             {
                 int.TryParse(url.Substring(0, url.IndexOf("-")), out id);
             }

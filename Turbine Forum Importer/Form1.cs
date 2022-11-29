@@ -28,24 +28,53 @@ namespace Turbine_Forum_Importer
         private void btnDoImport_Click(object sender, EventArgs e)
         {
             if (Posts.Count == 0) InitDbTables();
+            string path, completePath, errorPath;
 
             textStatus.Text = "";
-            string path = @"D:\Web Development\turbine\archives\zip\SHOWTHREAD";
-            path = @"D:\Web Development\Turbine\archives\rar\SHOWTHREAD";
-            path = @"E:\Turbine\WayBack Ruby Crawl\";
+
+            var archiveName = "zip";
+
+            switch (archiveName)
+            {
+                case "zip":
+                    path = @"D:\Web Development\turbine\archives\zip\SHOWTHREAD\";
+                    completePath = @"D:\Web Development\turbine\archives\zip\complete\";
+                    errorPath = @"D:\Web Development\turbine\archives\zip\error\";
+                    break;
+                case "rar":
+                    path = @"D:\Web Development\turbine\archives\rar\files\SHOWTHREAD\";
+                    completePath = @"D:\Web Development\turbine\archives\rar\complete\";
+                    errorPath = @"D:\Web Development\turbine\archives\rar\error\";
+                    break;
+                case "wayback_small":
+                    path = @"E:\Turbine\WayBack Ruby Crawl\en\";
+                    completePath = @"E:\Turbine\WayBack Ruby Crawl\complete\";
+                    errorPath = @"E:\Turbine\WayBack Ruby Crawl\errors\";
+                    break;
+                case "wayback_large":
+                    path = @"E:\Turbine\websites\files\en\";
+                    completePath = @"E:\Turbine\websites\complete\";
+                    errorPath = @"E:\Turbine\websites\error\";
+                    break;
+                default:
+                    path = "";
+                    completePath = "";
+                    errorPath = "";
+                    break;
+            }
+
             //path = @"D:\Web Development\Turbine\unique_samples\";
             string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-            /*
-            string[] files = new string[3];
-            files[0] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-34269-It-s-been-over-6-years-I-need-an-answer&goto=nextnewest.html");
-            files[1] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-34269-It-s-been-over-6-years-I-need-an-answer&p=754869&mode=linear.html");
-            files[2] = ("D:\\Web Development\\Turbine\\archives\\zip\\en\\forums\\showthread.php-57857&p=660770.html");
-            */
+            //string[] files = new string[1];
+            //files[0] = @"D:\Web Development\turbine\archives\rar\SHOWTHREAD\showthreadff32.html";
 
             statusFileCount.Text = files.Length + " Files Found.";
             progress.Maximum = files.Length;
             progress.Value = 0;
             progress.Step = 1;
+
+            int postEveryNumber = 1000;
+            int counter = 0;
 
             progress.Visible = true;
             statusFileCount.Visible = true;
@@ -54,53 +83,72 @@ namespace Turbine_Forum_Importer
             {
                 progress.PerformStep();
 
-                var import = new FileImporter(file);
-                string basename = Path.GetFileName(file);
-                textStatus.AppendText(basename + " -- " + import.Template + Environment.NewLine);
-
-                foreach (var p in import.Posts)
+                //if (file.IndexOf("showthread.php") == -1)
+                //    continue;
+                try
                 {
-                    if (Posts.ContainsKey(p.Key))
-                        Posts[p.Key].UpdatePost(p.Value);
-                    else
+
+                    var import = new FileImporter(file);
+                    string basename = Path.GetFileName(file);
+                    textStatus.AppendText(basename + " -- " + import.Template + Environment.NewLine);
+
+                    foreach (var p in import.Posts)
                     {
-                        p.Value.Modified = true;
-                        Posts.Add(p.Key, p.Value);
+                        if (Posts.ContainsKey(p.Key))
+                            Posts[p.Key].UpdatePost(p.Value);
+                        else
+                        {
+                            p.Value.Modified = true;
+                            Posts.Add(p.Key, p.Value);
+                        }
                     }
+
+                    foreach (var t in import.Threads)
+                    {
+                        if (Threads.ContainsKey(t.Key))
+                            Threads[t.Key].UpdateThread(t.Value);
+                        else
+                        {
+                            t.Value.Modified = true;
+                            Threads.Add(t.Key, t.Value);
+                        }
+
+                    }
+
+                    foreach (var u in import.Users)
+                    {
+                        if (Users.ContainsKey(u.Key))
+                            Users[u.Key].UpdateUser(u.Value);
+                        else
+                        {
+                            u.Value.Modified = true;
+                            Users.Add(u.Key, u.Value);
+                        }
+                    }
+
+                    foreach (var f in import.Forums)
+                    {
+                        if (Forums.ContainsKey(f.Key))
+                            Forums[f.Key].UpdateForum(f.Value);
+                        else
+                        {
+                            f.Value.Modified = true;
+                            Forums.Add(f.Key, f.Value);
+                        }
+                    }
+
+                    MoveFile(file, path, completePath);
                 }
-
-                foreach (var t in import.Threads)
+                catch(Exception ex)
                 {
-                    if (Threads.ContainsKey(t.Key))
-                        Threads[t.Key].UpdateThread(t.Value);
-                    else
-                    {
-                        t.Value.Modified = true;
-                        Threads.Add(t.Key, t.Value);
-                    }
-
+                     MoveFile(file, path, errorPath);
+                    // Do we do something here?
                 }
-
-                foreach (var u in import.Users)
+                counter++;
+                if(counter > postEveryNumber)
                 {
-                    if (Users.ContainsKey(u.Key))
-                        Users[u.Key].UpdateUser(u.Value);
-                    else
-                    {
-                        u.Value.Modified = true;
-                        Users.Add(u.Key, u.Value);
-                    }
-                }
-
-                foreach (var f in import.Forums)
-                {
-                    if (Forums.ContainsKey(f.Key))
-                        Forums[f.Key].UpdateForum(f.Value);
-                    else
-                    {
-                        f.Value.Modified = true;
-                        Forums.Add(f.Key, f.Value);
-                    }
+                    CopyToDb();
+                    counter = 0;
                 }
             }
 
@@ -110,25 +158,45 @@ namespace Turbine_Forum_Importer
             CopyToDb();
         }
 
+        private void MoveFile(string src, string srcPath, string destPath)
+        {
+            var destFile = src.Replace(srcPath, destPath);
+            // Try to create the destination path
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(destFile)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(destFile));
+                }
+                File.Move(src, destFile);
+            }catch(Exception ex)
+            {
+                // Error moving file? ?
+            }
+        }
+
         private void CopyToDb()
         {
+            //return;
+
             var totalCount = Users.Values.Sum(x => x.Modified == true ? 1 : 0);
             totalCount += Forums.Values.Sum(x => x.Modified == true ? 1 : 0);
             totalCount += Posts.Values.Sum(x => x.Modified == true ? 1 : 0);
             totalCount += Threads.Values.Sum(x => x.Modified == true ? 1 : 0);
-            statusFileCount.Text = totalCount.ToString() + " Entries to Post to Database.";
-            progress.Maximum = totalCount;
-            progress.Value = 0;
+            //statusFileCount.Text = totalCount.ToString() + " Entries to Post to Database.";
+            //progress.Maximum = totalCount;
+            //progress.Value = 0;
 
-            progress.Visible = true;
-            statusFileCount.Visible = true;
+            //progress.Visible = true;
+            //statusFileCount.Visible = true;
 
             var usersToImport = Users.Values.Where(x => x.Modified == true).ToList();
             foreach (var u in usersToImport)
             {
                 var sql = u.GetSQLStatement();
                 if (sql != "") db.RunSQL(sql);
-                progress.PerformStep();
+                Users[u.Id].Modified = false;
+                //progress.PerformStep();
             }
 
             var forumsToImport = Forums.Values.Where(x => x.Modified == true).ToList();
@@ -136,7 +204,8 @@ namespace Turbine_Forum_Importer
             {
                 var sql = f.GetSQLStatement();
                 if (sql != "") db.RunSQL(sql);
-                progress.PerformStep();
+                Forums[f.Id].Modified = false;
+                //progress.PerformStep();
             }
 
             var postsToImport = Posts.Values.Where(x => x.Modified == true).ToList();
@@ -144,7 +213,8 @@ namespace Turbine_Forum_Importer
             {
                 var sql = p.GetSQLStatement();
                 if (sql != "") db.RunSQL(sql);
-                progress.PerformStep();
+                Posts[p.Id].Modified = false;
+                //progress.PerformStep();
             }
 
             var threadsToImport = Threads.Values.Where(x => x.Modified == true).ToList();
@@ -152,20 +222,41 @@ namespace Turbine_Forum_Importer
             {
                 var sql = t.GetSQLStatement();
                 if (sql != "") db.RunSQL(sql);
-                progress.PerformStep();
+                Threads[t.Id].Modified = false;
+                //progress.PerformStep();
             }
 
-            progress.Visible = false;
-            statusFileCount.Visible = false;
+            //progress.Visible = false;
+            //statusFileCount.Visible = false;
 
         }
 
         private void btnOrganize_Click(object sender, EventArgs e)
         {
             textStatus.Text = "";
-            string path = @"D:\Web Development\Turbine\archives\zip\";
-            path = @"D:\Web Development\Turbine\archives\rar\";
-            //path = @"D:\Web Development\Turbine\unique_samples\";
+            string path = "";
+
+            var archiveName = "zip";
+
+            switch (archiveName)
+            {
+                case "zip":
+                    path = @"D:\Web Development\turbine\archives\zip\";
+                    break;
+                case "rar":
+                    path = @"D:\Web Development\turbine\archives\rar\files\SHOWTHREAD\";
+                    break;
+                case "wayback_small":
+                    path = @"E:\Turbine\WayBack Ruby Crawl\en\";
+                    break;
+                case "wayback_large":
+                    path = @"E:\Turbine\websites\files\en\";
+                    break;
+                default:
+                    path = "";
+                    break;
+            }
+
             string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
             statusFileCount.Text = files.Length + " Files Found.";
             progress.Maximum = files.Length;

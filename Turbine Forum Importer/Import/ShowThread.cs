@@ -6,6 +6,7 @@ using AngleSharp.Text;
 using Google.Protobuf.Collections;
 using Microsoft.VisualBasic.ApplicationServices;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Globalization;
@@ -19,6 +20,10 @@ using System.Xml;
 using Turbine_Forum_Importer.DataTypes;
 using static Google.Protobuf.WellKnownTypes.Field.Types;
 using User = Turbine_Forum_Importer.DataTypes.User;
+using Microsoft.ClearScript.JavaScript;
+using Microsoft.ClearScript.V8;
+using Microsoft.ClearScript.Windows;
+using System.CodeDom;
 
 namespace Turbine_Forum_Importer.Import
 {
@@ -40,6 +45,24 @@ namespace Turbine_Forum_Importer.Import
 
             var users = ShowThread_GetUsers();
             var posts = ShowThread_GetPosts();
+
+            string CachedPosts = ShowThread_GetCachedPosts();
+            if(CachedPosts != "")
+            {
+                document = parser.ParseDocument(CachedPosts);
+                var cached_users = ShowThread_GetUsers();
+                var cached_posts = ShowThread_GetPosts();
+                foreach (var u in cached_users)
+                {
+                    if (!users.ContainsKey(u.Key))
+                        users.Add(u.Key, u.Value);
+                }
+                foreach (var p in cached_posts)
+                {
+                    if (!posts.ContainsKey(p.Key))
+                        posts.Add(p.Key, p.Value);
+                }
+            }
         }
 
         ForumThread ShowThread_GetThreadInfo(ForumThread t)
@@ -171,6 +194,23 @@ namespace Turbine_Forum_Importer.Import
                 }
             }
 
+            var sigQuery = u.QuerySelector(".signaturecontainer");
+            if(sigQuery != null) {
+                user.Signature = sigQuery.InnerHtml;
+            }
+
+            var repQuery = u.QuerySelector(".postbit_reputation");
+            if (repQuery != null)
+            {
+                user.Reputation = repQuery.OuterHtml;
+            }
+
+            var titleQuery = u.QuerySelector(".usertitle");
+            if (titleQuery != null)
+            {
+                user.Title = titleQuery.TextContent.Trim();
+            }
+
 
             // You could post as a guest??
             var guests = document.QuerySelectorAll("span.username.guest");
@@ -196,6 +236,7 @@ namespace Turbine_Forum_Importer.Import
                 var user = ShowThread_GetUser(u);
                 if ((user.Id > 0 || user.Guest) && users.ContainsKey(user.Name) == false)
                 {
+                    AddUser(user);
                     users.Add(user.Name, user);
                 }
             }
@@ -207,8 +248,9 @@ namespace Turbine_Forum_Importer.Import
         {
             Dictionary<int, Post> MyPosts = new Dictionary<int, Post>();
 
-            var postItems = document.QuerySelectorAll("#posts > li");
-            foreach(var postItem in postItems)
+            //var postItems = document.QuerySelectorAll("#posts > li");
+            var postItems = document.QuerySelectorAll("li.postbitlegacy");
+            foreach (var postItem in postItems)
             {
                 var post = new Post();
                 post.Thread = threadId;
@@ -258,6 +300,27 @@ namespace Turbine_Forum_Importer.Import
                     
             }
             return null;
+        }
+
+        string ShowThread_GetCachedPosts()
+        {
+            string CachedPosts = "";
+            var startIndex = RawText.IndexOf("// cached posts (no page reload required to view)");
+            if (startIndex != -1)
+            {
+                var endString = "</script>";
+                var endIndex = RawText.IndexOf(endString, startIndex);
+                var cacheString = RawText.Substring(startIndex, endIndex - startIndex);
+                cacheString = "var pd = []; var pn = []; var pu = []; var guestphrase = \"Guest\";" + Environment.NewLine + cacheString;
+                cacheString += " var postData = \"\"; pd.forEach(function(val){ postData = postData + val;});";
+
+                var engine = new V8ScriptEngine();
+                engine.Evaluate(cacheString);
+                var postData = engine.Script.postData;
+                return postData;
+               
+            }
+            return CachedPosts;
         }
     }
 }

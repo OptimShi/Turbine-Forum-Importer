@@ -20,18 +20,26 @@ namespace Turbine_Forum_Importer.DataTypes
         public string JoinDate = "";
         public string Location = "";
 
+        public string Title = "";
+        public string Signature = "";
+        public string Reputation = "";
+
         public bool Modified = false;
 
         public string GetSQLStatement()
         {
-            string sql = "REPLACE INTO `users` (`id`, `username`, `url`, `posts`, `avatar`, `join_date`, `location`) VALUES ";
+            string sql = "REPLACE INTO `users` (`id`, `username`, `url`, `posts`, `avatar`, `join_date`, `location`, `title`, `signature`, `reputation`) VALUES ";
             sql += $"({Id}, " +
                 $"'{MySqlHelper.EscapeString(Name)}', " +
                 $"'{MySqlHelper.EscapeString(Url)}', " +
                 $"{PostCount}, " +
                 $"'{MySqlHelper.EscapeString(Avatar)}', " +
                 $"'{MySqlHelper.EscapeString(JoinDate)}', " +
-                $"'{MySqlHelper.EscapeString(Location)}')";
+                $"'{MySqlHelper.EscapeString(Location)}'," +
+                $"'{MySqlHelper.EscapeString(Title)}'," +
+                $"'{MySqlHelper.EscapeString(Signature)}'," +
+                $"'{MySqlHelper.EscapeString(Reputation)}'" +
+                $")";
             return sql;
         }
 
@@ -67,6 +75,21 @@ namespace Turbine_Forum_Importer.DataTypes
             if (Location == "" && newUser.Location != "")
             {
                 Location = newUser.Location;
+                Modified = true;
+            }
+            if (Title == "" && newUser.Title != "")
+            {
+                Title = newUser.Title;
+                Modified = true;
+            }
+            if (Signature == "" && newUser.Signature != "")
+            {
+                Signature = newUser.Signature;
+                Modified = true;
+            }
+            if (Reputation == "" && newUser.Reputation != "")
+            {
+                Reputation = newUser.Reputation;
                 Modified = true;
             }
         }
